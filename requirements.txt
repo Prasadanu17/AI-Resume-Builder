@@ -1,0 +1,13 @@
+streamlit
+PyPDF2
+scikit-learn
+matplotlib
+nltk
+networkx
+numpy
+fpdf
+
+# ML upgrades (install for full features)
+sentence-transformers   # SBERT semantic similarity
+spacy                   # NER-based skill extraction
+# After installing spacy, run: python -m spacy download en_core_web_sm
