@@ -41,7 +41,7 @@ try:
 except Exception:
     HAS_FPDF = False
 
-st.set_page_config(page_title="AI Resume Analyzer Pro", page_icon="assets/document_icon.png", layout="wide")
+st.set_page_config(page_title="AI Resume Analyzer", page_icon="assets/document_icon.png", layout="wide")
 st.title("AI Resume Analyzer Pro")
 st.markdown("""
 Upload your resume (PDF) and paste a job description.  
