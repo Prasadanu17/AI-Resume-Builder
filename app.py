@@ -42,7 +42,7 @@ except Exception:
     HAS_FPDF = False
 
 st.set_page_config(page_title="AI Resume Analyzer", page_icon="assets/document_icon.png", layout="wide")
-st.title("AI Resume Analyzer Pro")
+st.title("AI Resume Analyzer")
 st.markdown("""
 Upload your resume (PDF) and paste a job description.  
 This tool uses **Sentence-BERT semantic similarity**, **NER-based skill extraction**, 
