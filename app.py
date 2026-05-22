@@ -18,6 +18,7 @@ nltk.download('averaged_perceptron_tagger_eng', quiet=True)
 import io
 import numpy as np
 from datetime import datetime
+import unicodedata
 
 # Optional imports
 try:
@@ -137,6 +138,14 @@ def tfidf_sim(rt, jt):
     v = TfidfVectorizer()
     m = v.fit_transform([r, j])
     return round(cosine_similarity(m[0:1], m[1:2])[0][0]*100, 2), r, j
+
+def normalize_for_pdf(text):
+    if text is None:
+        return ""
+    t = str(text)
+    t = unicodedata.normalize("NFKD", t)
+    t = t.replace("—", "-").replace("–", "-").replace("…", "...")
+    return t.encode("latin-1", errors="replace").decode("latin-1")
 
 def sbert_sim(rt, jt):
     if not HAS_SBERT:
@@ -295,42 +304,42 @@ def make_pdf(data):
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "AI Resume Analyzer Pro — Report", ln=True, align="C")
+    pdf.cell(0, 10, normalize_for_pdf("AI Resume Analyzer Pro - Report"), ln=True, align="C")
     pdf.set_font("Arial", "", 11)
-    pdf.cell(0, 8, f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}", ln=True)
+    pdf.cell(0, 8, normalize_for_pdf(f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}"), ln=True)
     pdf.ln(4)
     pdf.set_font("Arial", "B", 13)
-    pdf.cell(0, 8, f"Blended Match Score: {data['blended']}%", ln=True)
-    pdf.cell(0, 8, f"ATS Score: {data['ats']}/100", ln=True)
+    pdf.cell(0, 8, normalize_for_pdf(f"Blended Match Score: {data['blended']}%"), ln=True)
+    pdf.cell(0, 8, normalize_for_pdf(f"ATS Score: {data['ats']}/100"), ln=True)
     pdf.ln(3)
-    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, "Domain Classification:", ln=True)
+    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, normalize_for_pdf("Domain Classification:"), ln=True)
     pdf.set_font("Arial", "", 11)
     for d,s in data.get("domains",[])[:3]:
-        pdf.cell(0, 6, f"  {d}: {s}%", ln=True)
+        pdf.cell(0, 6, normalize_for_pdf(f"  {d}: {s}%"), ln=True)
     pdf.ln(2)
-    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, "Recommended Skills to Learn:", ln=True)
+    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, normalize_for_pdf("Recommended Skills to Learn:"), ln=True)
     pdf.set_font("Arial", "", 11)
     for sk,c in data.get("next_skills",[]):
-        pdf.cell(0, 6, f"  {sk} (linked to {c} of your skills)", ln=True)
+        pdf.cell(0, 6, normalize_for_pdf(f"  {sk} (linked to {c} of your skills)"), ln=True)
     pdf.ln(2)
-    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, "Employment Gaps:", ln=True)
+    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, normalize_for_pdf("Employment Gaps:"), ln=True)
     pdf.set_font("Arial", "", 11)
     for g in data.get("gaps", []):
-        pdf.cell(0, 6, f"  {g['months']}mo gap: {g['after']} to {g['before']}", ln=True)
+        pdf.cell(0, 6, normalize_for_pdf(f"  {g['months']}mo gap: {g['after']} to {g['before']}"), ln=True)
     if not data.get("gaps"):
-        pdf.cell(0, 6, "  No significant gaps detected.", ln=True)
+        pdf.cell(0, 6, normalize_for_pdf("  No significant gaps detected."), ln=True)
     pdf.ln(2)
-    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, "Feedback:", ln=True)
+    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, normalize_for_pdf("Feedback:"), ln=True)
     pdf.set_font("Arial", "", 11)
     for f in data.get("feedback",[]):
-        pdf.multi_cell(0, 6, f"  - {f}")
+        pdf.multi_cell(0, 6, normalize_for_pdf(f"  - {f}"))
     pdf.ln(2)
-    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, "Interview Questions:", ln=True)
+    pdf.set_font("Arial", "B", 12); pdf.cell(0, 8, normalize_for_pdf("Interview Questions:"), ln=True)
     pdf.set_font("Arial", "", 11)
     for q in data.get("questions",[]):
-        pdf.multi_cell(0, 6, f"  - {q}")
+        pdf.multi_cell(0, 6, normalize_for_pdf(f"  - {q}"))
     buf = io.BytesIO()
-    buf.write(pdf.output(dest="S").encode("latin-1"))
+    buf.write(pdf.output(dest="S").encode("latin-1", errors="replace"))
     buf.seek(0)
     return buf.read()
 
